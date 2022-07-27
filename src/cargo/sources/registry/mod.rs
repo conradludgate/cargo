@@ -528,6 +528,8 @@ pub enum MaybeLock {
 }
 
 mod download;
+mod git_index;
+mod git_remote;
 mod http_remote;
 mod index;
 mod local;
@@ -548,6 +550,8 @@ impl<'cfg> RegistrySource<'cfg> {
         let name = short_name(source_id);
         let ops = if source_id.url().scheme().starts_with("sparse+") {
             Box::new(http_remote::HttpRegistry::new(source_id, config, &name)?) as Box<_>
+        } else if source_id.url().scheme().starts_with("git") {
+            Box::new(git_remote::GitRemoteRegistry::new(source_id, config, &name)) as Box<_>
         } else {
             Box::new(remote::RemoteRegistry::new(source_id, config, &name)) as Box<_>
         };

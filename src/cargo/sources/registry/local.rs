@@ -9,6 +9,8 @@ use std::io::{self, prelude::*};
 use std::path::Path;
 use std::task::Poll;
 
+use super::download;
+
 /// A local registry is a registry that lives on the filesystem as a set of
 /// `.crate` files with an `index` directory in the same format as a remote
 /// registry.
@@ -109,7 +111,7 @@ impl<'cfg> RegistryData for LocalRegistry<'cfg> {
     }
 
     fn download(&mut self, pkg: PackageId, checksum: &str) -> CargoResult<MaybeLock> {
-        let crate_file = format!("{}-{}.crate", pkg.name(), pkg.version());
+        let crate_file = download::filename(pkg);
 
         // Note that the usage of `into_path_unlocked` here is because the local
         // crate files here never change in that we're not the one writing them,
